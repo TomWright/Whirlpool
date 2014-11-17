@@ -11,15 +11,9 @@ class HomeController extends BaseController
     }
 
 
-    public function indexAction($name, $age)
+    public function helloWorldAction()
     {
-       $this->displayView('test', ['name' => $name, 'age' => $age]);
-    }
-
-    public function passwordTestAction()
-    {
-        $name = Input::get('name', 'Jack');
-        echo $name;
+        echo 'Hello World';
     }
 
 }

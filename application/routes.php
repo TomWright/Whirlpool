@@ -35,14 +35,5 @@ define('REGEX_INT', '[0-9]{1,10}');
 $router->add('home', '/')
     ->setValues([
             'controller' => 'home',
-            'method' => 'passwordTest'
+            'method' => 'helloWorld'
      ]);
-
-$router->add('welcome', '/hello/{name}/{age}')
-    ->addTokens([
-            'name' => REGEX_ALPHA,
-            'age' => REGEX_INT,
-    ])
-    ->setValues([
-            'controller' => 'home',
-    ]);
