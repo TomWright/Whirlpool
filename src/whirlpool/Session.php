@@ -5,7 +5,7 @@ namespace Whirlpool;
 class Session
 {
 
-    protected static $flashKeys = [];
+    protected static $flashKeys = array();
 
 
     public static function init()
@@ -13,7 +13,7 @@ class Session
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
         }
-        static::$flashKeys = static::get('_flashKeys');
+        static::$flashKeys = static::get('_flashKeys', []);
     }
 
 

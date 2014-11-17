@@ -50,13 +50,14 @@ class Whirlpool
             }
         }
 
-        $capsule = new Capsule();
-
-        $capsule->addConnection(
-            Config::get('database')
-        );
-
-        $capsule->bootEloquent();
+        $databaseConfig = Config::get('database');
+        if ($databaseConfig !== null) {
+            $capsule = new Capsule();
+            $capsule->addConnection(
+                $databaseConfig
+            );
+            $capsule->bootEloquent();
+        }
     }
 
 

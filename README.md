@@ -37,6 +37,10 @@ Views are handled with [Twig](http://twig.sensiolabs.org/). When your controller
 will have access to the twig object via `$this->twig`. A shortcut to display views has also been provided in the form of
 `$this->displayView($viewName [, array $data = array()]);`.
 
+### Database Configuration
+In order to use Models you need to have a database connection. The credentials for this connection can be set in `config/database.php`.
+An example configuration file can be found at `config/example_database.php`.
+
 Subdomains
 ----------
 Subdomains can be a useful way to separate logic for different sections of your applications.
