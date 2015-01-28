@@ -16,6 +16,11 @@ class Whirlpool
 
     protected $action = null;
 
+    /**
+     * @var Capsule
+     */
+    protected $capsule = null;
+
 
     public function __construct()
     {
@@ -51,12 +56,16 @@ class Whirlpool
         }
 
         $databaseConfig = Config::get('database');
-        if ($databaseConfig !== null) {
-            $capsule = new Capsule();
-            $capsule->addConnection(
-                $databaseConfig
-            );
-            $capsule->bootEloquent();
+        if ($databaseConfig !== null && is_array($databaseConfig)) {
+            $this->capsule = new Capsule();
+            foreach ($databaseConfig as $name => $conf) {
+                if (array_key_exists('name', $conf) && strlen($conf['name']) > 0) {
+                    $name = $conf['name'];
+                    unset($conf['name']);
+                }
+                $this->capsule->addConnection($conf, $name);
+            }
+            $this->capsule->bootEloquent();
         }
     }
 

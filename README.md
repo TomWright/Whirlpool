@@ -41,6 +41,20 @@ will have access to the twig object via `$this->twig`. A shortcut to display vie
 In order to use Models you need to have a database connection. The credentials for this connection can be set in `config/database.php`.
 An example configuration file can be found at `config/example_database.php`.
 
+### Multiple Databases
+You can interact with multiple databases in a way that is very similar to Laravel as we are using Eloquent. All you need
+to do is ensure that the new database credentials have been set up in `config/database.php` with a name of your choosing.
+You can set the name for that connection by either specifying it in the array key, or setting 'name' => 'my-second-connection'.
+
+Once the name is set simply open a model and set the connection name.
+
+    protected $connection = 'my-second-connection';
+    
+You are also able to do the following, where User is a model.
+
+    $user = new User();
+    $user->setConnection('my-second-connection');
+
 Subdomains
 ----------
 Subdomains can be a useful way to separate logic for different sections of your applications.
