@@ -146,6 +146,15 @@ class Whirlpool
             array_unshift($directories, $controllerDirPath);
         }
 
+        $configDirectories = Config::get('autoload.directories');
+        if (is_array($configDirectories)) $directories = array_merge($directories, $configDirectories);
+        if (is_array($configDirectories)) {
+            foreach ($configDirectories as $key => $val) {
+                $configDirectories[$key] = APP_PATH . "/{$val}/";
+            }
+            $directories = array_merge($directories, $configDirectories);
+        }
+
         $subdomain = Request::subdomain();
 
         if ($subdomain !== null) {
@@ -155,6 +164,13 @@ class Whirlpool
             ];
             if (isset($this->action->controllerDir) && strlen($this->action->controllerDir)) {
                 array_unshift($subdomainDirectories, APP_PATH . "/subdomains/{$subdomain}/controllers/{$this->action->controllerDir}");
+            }
+            $configSubdomainDirectories = Config::get('autoload.subdomainDirectories');
+            if (is_array($configSubdomainDirectories)) {
+                foreach ($configSubdomainDirectories as $key => $val) {
+                    $configSubdomainDirectories[$key] = "/subdomains/{$subdomain}/{$val}/";
+                }
+                $subdomainDirectories = array_merge($subdomainDirectories, $configSubdomainDirectories);
             }
             $directories = array_merge($subdomainDirectories, $directories);
         }

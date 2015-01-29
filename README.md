@@ -32,6 +32,25 @@ is provided with Whirlpool and it is recommended that your controllers extend `W
 The models are located at `application/models`. The `Whirlpool\BaseModel` extends Eloquent so extending from it will
 give you access to all the wonderful things that Eloquent provides. For help with Eloquent see the [documentation](http://laravel.com/docs/4.2/eloquent)
 
+### Autoloading More Directories
+You are able to specify more directories from which Whirlpool will auto-load from in the config/autoload file.
+The 'directory' array will add directories for standard requests, and the 'subdomainDirectory' will add directories for requests that come in on a subdomain.
+For example..
+    
+    return [
+    
+        'directories' => [
+            '/repositories/',
+        ],
+    
+        'subdomainDirectories' => [
+    
+        ],
+    
+    ];
+    
+This allows you to create classes in `application/repositories` and have them autoloaded.
+
 ### Views
 Views are handled with [Twig](http://twig.sensiolabs.org/). When your controller extends from `Whirlpool\BaseController` you
 will have access to the twig object via `$this->twig`. A shortcut to display views has also been provided in the form of
