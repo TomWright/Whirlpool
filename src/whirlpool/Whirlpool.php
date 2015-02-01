@@ -67,13 +67,26 @@ class Whirlpool
             }
             $this->capsule->bootEloquent();
         }
+
+        $hookConfig = Config::get('hooks');
+        if (is_array($hookConfig)) {
+            foreach ($hookConfig as $event => $callable) {
+                EventHandler::addListener($event, $callable);
+            }
+        }
+
+        EventHandler::triggerEvent('whirlpool-initialized', $this);
     }
 
 
     public function run()
     {
+        EventHandler::triggerEvent('whirlpool-load-action', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
         $this->loadAction();
-        $this->executeAction();
+        EventHandler::triggerEvent('whirlpool-loaded-action', $this->action);
+        EventHandler::triggerEvent('whirlpool-execute-action', $this->action);
+        $response = $this->executeAction();
+        EventHandler::triggerEvent('whirlpool-executed-action', $response);
         Session::clearFlashMessages();
     }
 
@@ -125,11 +138,11 @@ class Whirlpool
     {
         $controller = new $this->action->controller();
 
+        EventHandler::triggerEvent('whirlpool-controller-initialized', $controller, $this->action);
+
         $response = call_user_func_array([$controller, $this->action->action], $this->action->params);
 
-        if ($response !== null) {
-            var_dump($response);
-        }
+        return $response;
     }
 
 
@@ -175,12 +188,18 @@ class Whirlpool
             $directories = array_merge($subdomainDirectories, $directories);
         }
 
+        $found = false;
         foreach ($directories as $dir) {
             $path = "{$dir}/{$class}.php";
             if (is_file($path)) {
+                $found = true;
                 require_once $path;
                 break;
             }
+        }
+
+        if ($found === false) {
+            EventHandler::triggerEvent('whirlpool-class-not-found', $class);
         }
     }
 

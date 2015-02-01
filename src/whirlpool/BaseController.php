@@ -30,7 +30,8 @@ abstract class BaseController
 
     protected function displayView($view, array $data = array())
     {
-        echo $this->twig->render($view . '.php', $data);
+        $response = $this->twig->render($view . '.php', $data);
+        return $response;
     }
 
 }

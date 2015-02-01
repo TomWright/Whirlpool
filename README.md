@@ -76,6 +76,7 @@ You are also able to do the following, where User is a model.
 
 Subdomains
 ----------
+
 Subdomains can be a useful way to separate logic for different sections of your applications.
 You can use `Request::subdomain()` to get the active subdomain. Please note that there is a list of subdomains to ignore
 in `config/general.php`.
@@ -84,3 +85,27 @@ in `config/general.php`.
 All you have to do to start using a subdomain is to create a folder in `application/subdomains`. Inside this new folder
 you will need to create the folders `controllers`, `models` and `views`. This folder will be used as the main application
 folder when the specified subdomain is active, and the `application/models` folder will act as a fallback.
+
+Hooks
+----------
+### Introduction to hooks
+There are several hooks that you can manipulate in order to run custom code at a fixed point in the applications life cycle.
+
+Hooks should be created in `config/hooks.php` in the following format:
+
+    return [
+        'hook-name' => function ($argument1, $argument2) {
+            // This code will be run when the hook is triggered
+        },
+    ];
+    
+### List of default hooks
+| Hook Name                        | Arguments           | Timing                                               |
+| -------------------------------- | ------------------- | ---------------------------------------------------- |
+| whirlpool-initialized            | whirlpool           | Once Whirlpool::init() has been executed.            |
+| whirlpool-load-action            | path                | When an action is about to be loaded.                |
+| whirlpool-loaded-action          | action              | When an action has just been loaded.                 |
+| whirlpool-execute-action         | action              | When an action is about to be executed.              |
+| whirlpool-controller-initialized | controller, action  | When the main controller has just been instantiated. |
+| whirlpool-executed-action        | response            | When an action has just been executed.               |
+| whirlpool-class-not-found        | class               | When the Whirlpool autoloader cannot find a class.   |
