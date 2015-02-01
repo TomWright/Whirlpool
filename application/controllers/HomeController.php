@@ -13,7 +13,6 @@ class HomeController extends BaseController
 
     public function helloWorldAction()
     {
-        return 'test';
         echo 'Hello World';
     }
 

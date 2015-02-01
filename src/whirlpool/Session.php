@@ -12,7 +12,15 @@ class Session
     {
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
+            $_SESSION['security']['userAgent'] = sha1(isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : 'nothing');
         }
+
+        if (! static::doChecks()) {
+            static::destroy();
+            static::init();
+            return;
+        }
+
         static::$flashKeys = static::get('_flashKeys', []);
     }
 
@@ -50,6 +58,24 @@ class Session
         foreach (static::$flashKeys as $key) {
             static::remove($key);
         }
+    }
+
+
+    public static function destroy()
+    {
+        $params = session_get_cookie_params();
+        setcookie(session_name(), '', time() - 42000,
+            $params["path"], $params["domain"],
+            $params["secure"], $params["httponly"]
+        );
+        session_destroy();
+    }
+
+
+    protected static function doChecks()
+    {
+        $validUserAgent = isset($_SESSION['security']['userAgent']) && $_SESSION['security']['userAgent'] == sha1(isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : 'nothing');
+        return $validUserAgent;
     }
 
 }
