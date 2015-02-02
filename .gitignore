@@ -1,4 +1,5 @@
-vendor/*
-!vendor/whirlpool
+vendor
+application
+public
 .idea
 application/config/database.php
