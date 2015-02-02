@@ -1,4 +1,4 @@
 Whirlpool Framework
 ===================
 
-Please see https://githib.com/TomWright/WhirlpoolFramework
+Please see https://github.com/TomWright/WhirlpoolFramework
