@@ -1,7 +1,6 @@
 {
     "name": "whirlpool/framework",
     "description": "An MVC framework based on Composer components.",
-    "type": "project",
     "keywords": [
         "framework",
         "whirlpool",
