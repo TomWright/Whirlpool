@@ -34,7 +34,7 @@ abstract class Request
     {
         if (static::$subdomain === null) {
             $serverName = explode('.', $_SERVER['SERVER_NAME']);
-            if (count($serverName)) {
+            if (count($serverName) > 1) {
                 $ignoredSubdomains = Config::get('general.ignoredSubdomains');
                 $subdomain = array_shift($serverName);
                 if (!in_array($subdomain, $ignoredSubdomains)) {
