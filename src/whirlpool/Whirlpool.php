@@ -108,6 +108,9 @@ class Whirlpool
                 $action = ((isset($params['method']) && strlen($params['method'])) ? $params['method'] : Config::get('routing.defaultAction'));
             }
             unset($params['controller'], $params['method'], $params['action']);
+            if (isset($route->extraTokens) && is_array($route->extraTokens)) {
+                $params = array_merge($route->extraTokens, $params);
+            }
         }
 
         if ($controller === null) {
