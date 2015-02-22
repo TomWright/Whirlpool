@@ -12,7 +12,7 @@ class Whirlpool
     /**
      * @var Router;
      */
-    protected $router = null;
+    public $router = null;
 
     protected $action = null;
 
