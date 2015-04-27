@@ -14,6 +14,9 @@ class Whirlpool
      */
     public $router = null;
 
+    /**
+     * @var \stdClass|null
+     */
     protected $action = null;
 
     /**
@@ -21,7 +24,15 @@ class Whirlpool
      */
     protected $capsule = null;
 
+    /**
+     * @var Container
+     */
+    public static $container = null;
 
+
+    /**
+     * Set up the autoloading and then initialize Whirlpool
+     */
     public function __construct()
     {
         spl_autoload_register([$this, 'autoload']);
@@ -29,6 +40,9 @@ class Whirlpool
     }
 
 
+    /**
+     * @throws \Exception
+     */
     protected function init()
     {
         // Load class aliases
@@ -36,6 +50,8 @@ class Whirlpool
         foreach ($aliases as $orig => $new) {
             class_alias($orig, $new, true);
         }
+
+        static::$container = new Container();
 
         Session::init();
         Request::init();
@@ -137,9 +153,12 @@ class Whirlpool
     }
 
 
+    /**
+     * @return mixed
+     */
     protected function executeAction()
     {
-        $controller = new $this->action->controller();
+        $controller = $this->make($this->action->controller);
 
         EventHandler::triggerEvent('whirlpool-controller-initialized', $controller, $this->action);
 
@@ -149,6 +168,9 @@ class Whirlpool
     }
 
 
+    /**
+     * @param $class
+     */
     public function autoload($class)
     {
 
@@ -204,6 +226,17 @@ class Whirlpool
         if ($found === false) {
             EventHandler::triggerEvent('whirlpool-class-not-found', $class);
         }
+    }
+
+
+    /**
+     * @param $className
+     * @param bool $singleton
+     * @return object
+     */
+    public static function make($className, $singleton = true)
+    {
+        return static::$container->make($className, $singleton);
     }
 
 }
