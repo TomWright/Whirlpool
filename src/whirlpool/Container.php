@@ -60,9 +60,23 @@ class Container
         if ($constructor !== null) {
             $params = $constructor->getParameters();
             if (is_array($params)) {
+                /**
+                 * @var \ReflectionParameter $param
+                 */
                 foreach ($params as $param) {
-                    $parameterClass = $param->getClass()->getName();
-                    $parameterObject = $this->make($parameterClass, true);
+                    $parameterObject = null;
+
+                    $parameterClass = $param->getClass();
+                    if (is_object($parameterClass)) {
+                        $parameterName = $parameterClass->getName();
+                        $parameterObject = $this->make($parameterName, true);
+                    } elseif ($param->isArray()) {
+                        $parameterObject = array();
+                    } elseif ($param->isCallable()) {
+                        $parameterObject = function() {};
+                    } elseif ($param->isDefaultValueAvailable()) {
+                        $parameterObject = $param->getDefaultValue();
+                    }
                     $args[] = $parameterObject;
                 }
             }
