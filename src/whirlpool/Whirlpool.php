@@ -45,6 +45,8 @@ class Whirlpool
      */
     protected function init()
     {
+        $this->setEnvironment();
+
         // Load class aliases
         $aliases = Config::get('aliases');
         foreach ($aliases as $orig => $new) {
@@ -237,6 +239,28 @@ class Whirlpool
     public static function make($className, $singleton = true)
     {
         return static::$container->make($className, $singleton);
+    }
+
+
+    /**
+     * Set the ENVIRONMENT constant.
+     */
+    private function setEnvironment()
+    {
+        $environment = 'production';
+
+        if (isset($_SERVER['ENVIRONMENT']) && $_SERVER['ENVIRONMENT'] == 'development' || isset($_SERVER['DEVELOPMENT']) && $_SERVER['DEVELOPMENT'] == 1) {
+            $environment = 'development';
+        }
+
+        define('ENVIRONMENT', $environment);
+
+        switch (ENVIRONMENT) {
+            case 'development':
+                ini_set('display_errors', 1);
+                error_reporting(-1);
+                break;
+        }
     }
 
 }
