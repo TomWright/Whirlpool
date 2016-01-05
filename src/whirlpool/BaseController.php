@@ -28,10 +28,16 @@ abstract class BaseController
     }
 
 
-    protected function displayView($view, array $data = array())
+    protected function loadView($view, array $data = array())
     {
         $response = $this->twig->render($view . '.php', $data);
         return $response;
+    }
+
+
+    protected function displayView($view, array $data = array())
+    {
+        echo $this->loadView($view, $data);
     }
 
 }
