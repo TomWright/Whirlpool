@@ -3,8 +3,7 @@
 namespace Whirlpool;
 
 use \Illuminate\Database\Capsule\Manager as Capsule;
-use \Aura\Router\RouterFactory;
-use \Aura\Router\Router;
+use \Whirlpool\Router\Router;
 
 class Whirlpool
 {
@@ -58,20 +57,7 @@ class Whirlpool
         Session::init();
         Request::init();
 
-        $routerFactory = new RouterFactory();
-        $this->router = $routerFactory->newInstance();
-
-        $routeFiles = Config::get('routing.routeFiles');
-        if (is_array($routeFiles)) {
-            function initRoutes(Router & $router, $file) {
-                if (is_file($file)) {
-                    require_once $file;
-                }
-            }
-            foreach ($routeFiles as $file) {
-                initRoutes($this->router, $file);
-            }
-        }
+        $this->initRouter();
 
         $databaseConfig = Config::get('database');
         if ($databaseConfig !== null && is_array($databaseConfig)) {
@@ -97,6 +83,14 @@ class Whirlpool
     }
 
 
+    protected function initRouter()
+    {
+        $this->router = new Router();
+        $this->router->setHttpMethod($_SERVER['REQUEST_METHOD']);
+        $this->router->setUri(rawurldecode(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH)));
+    }
+
+
     public function run()
     {
         EventHandler::triggerEvent('whirlpool-load-action', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
@@ -111,25 +105,9 @@ class Whirlpool
 
     protected function loadAction()
     {
-        $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-
-        $route = $this->router->match($path, $_SERVER);
-
-        $params = [];
-        $controller = null;
-        $action = null;
-
-        if ($route !== false) {
-            $params = $route->params;
-            if (isset($params['controller'])) {
-                $controller = $route->params['controller'];
-                $action = ((isset($params['method']) && strlen($params['method'])) ? $params['method'] : Config::get('routing.defaultAction'));
-            }
-            unset($params['controller'], $params['method'], $params['action']);
-            if (isset($route->extraTokens) && is_array($route->extraTokens)) {
-                $params = array_merge($route->extraTokens, $params);
-            }
-        }
+        $controller = $this->router->getController();
+        $action = $this->router->getMethod();
+        $params = $this->router->getVars();
 
         if ($controller === null) {
             $controller = Config::get('routing.notFoundController');
