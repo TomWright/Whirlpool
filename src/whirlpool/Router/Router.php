@@ -112,33 +112,19 @@ class Router
 
         switch ($routeInfo[0]) {
             case Dispatcher::NOT_FOUND:
-                // Use the not found handler.
-                $atPosition = strpos($this->notFoundHandler, '@');
-                if (is_string($atPosition) && $atPosition !== false) {
-                    $this->dispatcherResult['controller'] = substr($this->notFoundHandler, 0, $atPosition);
-                    $this->dispatcherResult['method'] = substr($this->notFoundHandler, $atPosition + 1);
-                }
+                $this->getControllerAndMethodFromHandler($this->notFoundHandler, $this->dispatcherResult['controller'], $this->dispatcherResult['method']);
                 break;
 
             case Dispatcher::METHOD_NOT_ALLOWED:
                 // Use the not found handler.
-                $atPosition = strpos($this->notFoundHandler, '@');
-                if (is_string($atPosition) && $atPosition !== false) {
-                    $this->dispatcherResult['controller'] = substr($this->notFoundHandler, 0, $atPosition);
-                    $this->dispatcherResult['method'] = substr($this->notFoundHandler, $atPosition + 1);
-                }
+                $this->getControllerAndMethodFromHandler($this->notFoundHandler, $this->dispatcherResult['controller'], $this->dispatcherResult['method']);
                 break;
 
             case Dispatcher::FOUND:
                 $handler = $routeInfo[1];
                 $vars = $routeInfo[2];
 
-                $atPosition = strpos($handler, '@');
-                if (is_string($atPosition) && $atPosition !== false) {
-                    // There is an @. This implies we have a Controller@Method to look for.
-                    $this->dispatcherResult['controller'] = substr($handler, 0, $atPosition);
-                    $this->dispatcherResult['method'] = substr($handler, $atPosition + 1);
-                }
+                $this->getControllerAndMethodFromHandler($handler, $this->dispatcherResult['controller'], $this->dispatcherResult['method']);
                 // TODO Implement functionality to deal with callable's etc.
 
                 if (is_array($vars)) {
@@ -146,6 +132,30 @@ class Router
                 }
                 break;
         }
+    }
+
+
+    /**
+     * @param string $handler E.g. home@test
+     * @param $controller Passed by reference. Will be filled with the controller value.
+     * @param $method Passed by reference. Will be filled with the method value.
+     * @return bool Returns true if there was an @ in the handler.
+     */
+    protected function getControllerAndMethodFromHandler($handler, & $controller, & $method)
+    {
+        $result = false;
+
+        if (is_string($handler)) {
+            $atPosition = strpos($handler, '@');
+            if ($atPosition !== false) {
+                // There is an @. This implies we have a Controller@Method to look for.
+                $controller = substr($handler, 0, $atPosition);
+                $method = substr($handler, $atPosition + 1);
+                $result = true;
+            }
+        }
+
+        return $result;
     }
 
 
