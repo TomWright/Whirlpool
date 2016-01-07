@@ -10,9 +10,10 @@ interface CollectionInterface
      * Add an item to the collection.
      *
      * @param $item
+     * @param null $id
      * @return mixed
      */
-    public function add($item);
+    public function add($item, $id = null);
 
 
     /**

@@ -11,15 +11,21 @@ trait CollectionTrait
      */
     protected $collectionItems = [];
 
+
     /**
      * Add an item to the collection.
      *
      * @param $item
+     * @param null $id
      * @return mixed
      */
-    public function add($item)
+    public function add($item, $id = null)
     {
-        $this->collectionItems[] = $item;
+        if ($id === null) {
+            $this->collectionItems[] = $item;
+        } else {
+            $this->collectionItems[$id] = $item;
+        }
     }
 
 
