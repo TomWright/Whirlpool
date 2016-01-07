@@ -85,7 +85,7 @@ class Container
         $object = $class->newInstanceArgs($args);
 
         if ($singleton) {
-            $this->aliases[$className] = $object;
+            $this->objects[$className] = $object;
         }
 
         return $object;
