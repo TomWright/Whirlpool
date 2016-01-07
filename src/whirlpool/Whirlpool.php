@@ -118,6 +118,36 @@ class Whirlpool
             $action = Config::get('routing.defaultAction');
         }
 
+        $this->setAction($controller, $action, $params);
+
+        $notFound = false;
+
+        if (! class_exists($this->action->controller)) {
+            $notFound = true;
+        } else {
+            $controller = $this->make($this->action->controller);
+            if (! method_exists($controller, $this->action->action)) {
+                $notFound = true;
+            }
+        }
+
+        if ($notFound) {
+            // The controller or action does not exist.
+            $controller = Config::get('routing.notFoundController');
+            $action = Config::get('routing.notFoundAction');
+
+            $this->setAction($controller, $action, $params);
+        }
+    }
+
+
+    /**
+     * @param $controller
+     * @param $action
+     * @param $params
+     */
+    protected function setAction($controller, $action, $params)
+    {
         $controllerTemp = explode('/', $controller);
         $controller = ucfirst(array_pop($controllerTemp));
         $controllerDir = implode('/', $controllerTemp);
