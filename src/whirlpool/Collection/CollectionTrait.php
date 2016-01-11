@@ -6,6 +6,8 @@ namespace Whirlpool\Collection;
 trait CollectionTrait
 {
 
+    protected $requiredObjectType = null;
+
     /**
      * @var array
      */
@@ -21,6 +23,7 @@ trait CollectionTrait
      */
     public function add($item, $id = null)
     {
+        $this->checkRequiredObjectType($item);
         if ($id === null) {
             $this->collectionItems[] = $item;
         } else {
@@ -80,6 +83,37 @@ trait CollectionTrait
     public function getAll()
     {
         return $this->collectionItems;
+    }
+
+
+    /**
+     * @return null
+     */
+    public function getRequiredObjectType()
+    {
+        return $this->requiredObjectType;
+    }
+
+
+    /**
+     * @param null $requiredObjectType
+     */
+    public function setRequiredObjectType($requiredObjectType)
+    {
+        $this->requiredObjectType = $requiredObjectType;
+    }
+
+
+    /**
+     * @param $object
+     */
+    protected function checkRequiredObjectType($object)
+    {
+        if ($this->requiredObjectType !== null && $object !== null) {
+            if (! is_a($object, $this->requiredObjectType)) {
+                throw new \InvalidArgumentException("Collection Object must be of type {$this->requiredObjectType}.");
+            }
+        }
     }
 
 }
