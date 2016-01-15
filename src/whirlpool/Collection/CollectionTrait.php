@@ -87,6 +87,17 @@ trait CollectionTrait
 
 
     /**
+     * Returns the number of items in the collection.
+     *
+     * @return int
+     */
+    public function count()
+    {
+        return count($this->collectionItems);
+    }
+
+
+    /**
      * @return null
      */
     public function getRequiredObjectType()

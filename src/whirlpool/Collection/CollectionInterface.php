@@ -49,4 +49,12 @@ interface CollectionInterface
      */
     public function getAll();
 
+
+    /**
+     * Returns the number of items in the collection.
+     *
+     * @return int
+     */
+    public function count();
+
 }
