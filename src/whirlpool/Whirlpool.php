@@ -99,7 +99,7 @@ class Whirlpool
         EventHandler::triggerEvent('whirlpool-execute-action', $this->action);
         $response = $this->executeAction();
         EventHandler::triggerEvent('whirlpool-executed-action', $response);
-        Session::clearFlashMessages();
+        Session::cleanUp();
     }
 
 

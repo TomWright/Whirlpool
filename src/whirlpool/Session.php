@@ -5,6 +5,8 @@ namespace Whirlpool;
 class Session
 {
 
+    protected static $oldFlashKeys = array();
+
     protected static $flashKeys = array();
 
 
@@ -21,7 +23,7 @@ class Session
             return;
         }
 
-        static::$flashKeys = static::get('_flashKeys', []);
+        static::$oldFlashKeys = static::get('_flashKeys', []);
     }
 
 
@@ -42,8 +44,20 @@ class Session
     public static function flash($key, $value)
     {
         static::set($key, $value);
-        static::$flashKeys[] = $key;
-        static::set('_flashKeys', static::$flashKeys);
+        static::addFlashKey($key);
+    }
+
+
+    protected static function addFlashKey($key)
+    {
+        if (! in_array($key, static::$flashKeys)) {
+            static::$flashKeys[] = $key;
+            static::set('_flashKeys', static::$flashKeys);
+        }
+        $keyIndex = array_search($key, static::$oldFlashKeys);
+        if ($keyIndex !== false) {
+            unset(static::$oldFlashKeys[$keyIndex]);
+        }
     }
 
 
@@ -53,10 +67,27 @@ class Session
     }
 
 
-    public static function clearFlashMessages()
+    public static function cleanUp()
     {
-        foreach (static::$flashKeys as $key) {
-            static::remove($key);
+        static::clearFlashMessages(true, false);
+    }
+
+
+    public static function clearFlashMessages($clearOld = true, $clearCurrent = false)
+    {
+        if ($clearOld) {
+            foreach (static::$oldFlashKeys as $index => $key) {
+                static::remove($key);
+                unset(static::$oldFlashKeys[$index]);
+            }
+        }
+
+        if ($clearCurrent) {
+            foreach (static::$flashKeys as $index => $key) {
+                static::remove($key);
+                unset(static::$flashKeys[$index]);
+            }
+            static::set('_flashKeys', static::$flashKeys);
         }
     }
 
