@@ -15,14 +15,10 @@ abstract class BaseController
 
     protected function init()
     {
-        $viewPath = APP_PATH . '/views';
-        $subdomain = Request::subdomain();
-        if ($subdomain !== null) {
-            $viewPath = APP_PATH . "/subdomains/{$subdomain}/views";
-        }
+        $viewPath = Config::get('general.viewPath');
         $twigLoader = new \Twig_Loader_Filesystem($viewPath);
         $this->twig = new \Twig_Environment($twigLoader, [
-                'cache' => APP_PATH . '/data/cache/twig',
+                'cache' => APP_DATA . '/cache/twig',
                 'auto_reload' => true,
             ]);
     }
