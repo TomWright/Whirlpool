@@ -30,11 +30,10 @@ class Whirlpool
 
 
     /**
-     * Set up the autoloading and then initialize Whirlpool
+     * Initialize Whirlpool
      */
     public function __construct()
     {
-        spl_autoload_register([$this, 'autoload']);
         $this->init();
     }
 
@@ -148,16 +147,10 @@ class Whirlpool
      */
     protected function setAction($controller, $action, $params)
     {
-        $controllerTemp = explode('/', $controller);
-        $controller = ucfirst(array_pop($controllerTemp));
-        $controllerDir = implode('/', $controllerTemp);
-
-        $controller .= 'Controller';
         $action .= 'Action';
 
         $this->action = new \stdClass();
         $this->action->controller = $controller;
-        $this->action->controllerDir = $controllerDir;
         $this->action->action = $action;
         $this->action->params = $params;
     }
@@ -175,67 +168,6 @@ class Whirlpool
         $response = call_user_func_array([$controller, $this->action->action], $this->action->params);
 
         return $response;
-    }
-
-
-    /**
-     * @param $class
-     */
-    public function autoload($class)
-    {
-
-        $directories = [
-            APP_PATH . '/controllers',
-            APP_PATH . '/models',
-        ];
-
-        if (isset($this->action->controllerDir) && strlen($this->action->controllerDir)) {
-            $controllerDirPath = APP_PATH . "/controllers/{$this->action->controllerDir}";
-            array_unshift($directories, $controllerDirPath);
-        }
-
-        $configDirectories = Config::get('autoload.directories');
-        if (is_array($configDirectories)) $directories = array_merge($directories, $configDirectories);
-        if (is_array($configDirectories)) {
-            foreach ($configDirectories as $key => $val) {
-                $configDirectories[$key] = APP_PATH . "/{$val}/";
-            }
-            $directories = array_merge($directories, $configDirectories);
-        }
-
-        $subdomain = Request::subdomain();
-
-        if ($subdomain !== null) {
-            $subdomainDirectories = [
-                APP_PATH . "/subdomains/{$subdomain}/controllers",
-                APP_PATH . "/subdomains/{$subdomain}/models",
-            ];
-            if (isset($this->action->controllerDir) && strlen($this->action->controllerDir)) {
-                array_unshift($subdomainDirectories, APP_PATH . "/subdomains/{$subdomain}/controllers/{$this->action->controllerDir}");
-            }
-            $configSubdomainDirectories = Config::get('autoload.subdomainDirectories');
-            if (is_array($configSubdomainDirectories)) {
-                foreach ($configSubdomainDirectories as $key => $val) {
-                    $configSubdomainDirectories[$key] = "/subdomains/{$subdomain}/{$val}/";
-                }
-                $subdomainDirectories = array_merge($subdomainDirectories, $configSubdomainDirectories);
-            }
-            $directories = array_merge($subdomainDirectories, $directories);
-        }
-
-        $found = false;
-        foreach ($directories as $dir) {
-            $path = "{$dir}/{$class}.php";
-            if (is_file($path)) {
-                $found = true;
-                require_once $path;
-                break;
-            }
-        }
-
-        if ($found === false) {
-            EventHandler::triggerEvent('whirlpool-class-not-found', $class);
-        }
     }
 
 
