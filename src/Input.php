@@ -16,7 +16,7 @@ class Input
     public static function post($key, $default = null)
     {
         $result = $default;
-        if (isset($_GET[$key])) $result = $_GET[$key];
+        if (isset($_POST[$key])) $result = $_POST[$key];
         return $result;
     }
 
